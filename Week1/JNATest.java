@@ -1,3 +1,4 @@
+//taken from http://openkinect.org/wiki/Java_JNA_Wrapper
 import org.openkinect.freenect.*;
  
 public class JNATest {
