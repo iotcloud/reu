@@ -1,0 +1,71 @@
+import org.openkinect.freenect.*;
+import 
+
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+
+public class KinectDepthTest {
+
+    public static void main(String[] args) throws InterruptedException {
+        final ImageUI ui = new ImageUI();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+		ui.show();
+            }
+        });
+        t.start();
+
+        // DECLARATIONS
+        Context ctx = null;
+        Device dev = null;
+
+        // INITIALIZE DEVICE
+        ctx = Freenect.createContext();
+        if (ctx.numDevices() > 0) {
+            dev = ctx.openDevice(0);
+        } else {
+            System.err.println("No kinects detected.  Exiting.");
+            System.exit(0);
+        }
+	
+	dev.startDepth(new DepthHandler() {
+		@Override
+		    public void onFrameReceived(FrameMode mode, ByteBuffer frame, int timestamp) {
+		    BufferedImage im = new BufferedImage(mode.getWidth(), mode.getHeight(), BufferedImage.TYPE_INT_RGB); 
+		    LZ4Factory factory = LZ4Factory.fastestInstance();
+		    
+		    byte[] data = "12345345234572".getBytes("UTF-8");;
+		    final int decompressedLength = data.length;
+		    
+		    // compress data
+		    LZ4Compressor compressor = factory.fastCompressor();
+		    int maxCompressedLength = compressor.maxCompressedLength(decompressedLength);
+		    byte[] compressed = new byte[maxCompressedLength];
+		    int compressedLength = compressor.compress(data, 0, decompressedLength, compressed, 0, maxCompressedLength);
+		    
+		    // decompress data
+		    // - method 1: when the decompressed length is known
+		    LZ4FastDecompressor decompressor = factory.fastDecompressor();
+		    byte[] restored = new byte[decompressedLength];
+		    int compressedLength2 = decompressor.decompress(compressed, 0, restored, 0, decompressedLength);
+		    // compressedLength == compressedLength2
+		    
+		    // - method 2: when the compressed length is known (a little slower)
+		    // the destination buffer needs to be over-sized
+		    LZ4SafeDecompressor decompressor2 = factory.safeDecompressor();
+		    int decompressedLength2 = decompressor2.decompress(compressed, 0, compressedLength, restored, 0);
+		    // decompressedLength == decompressedLength2
+		}
+    
+	    });
+		   
+	// SHUT DOWN
+	if (ctx != null) {
+	    if (dev != null) {
+		dev.close();
+            }
+        }
+        ctx.shutdown();
+    }
+}
