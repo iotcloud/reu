@@ -10,10 +10,10 @@ public class Sample {
 		byte[] compressed = Snappy.compress(input.getBytes("UTF-8"));
 		byte[] uncompressed = Snappy.uncompress(compressed);
 		
-		FileOutputStream outOld = new FileOutputStream("Traw_depth.txt");
+		FileOutputStream outOld = new FileOutputStream("sample_raw.txt");
 		outOld.write(input.getBytes("UTF-8"));
 		outOld.close();
-		FileOutputStream outComp = new FileOutputStream("compressed_depth.txt");
+		FileOutputStream outComp = new FileOutputStream("sample_compressed.txt");
 		outComp.write(compressed);
 		outComp.close();
 

@@ -1,0 +1,1 @@
+`LHello snappy-java! Sd is a JNI-based wrapper of&€, a fast compresser/decompresser.
