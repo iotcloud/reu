@@ -31,6 +31,7 @@ public class test {
 		// compressedLength == compressedLength2
 		
 		// - method 2: when the compressed length is known (a little slower)
+		System.out.println(data.length + "<-data " + compressed.length + "<-comp  " + restored.length);
 		// the destination buffer needs to be over-sized
 		LZ4SafeDecompressor decompressor2 = factory.safeDecompressor();
 		int decompressedLength2 = decompressor2.decompress(compressed, 0, compressedLength, restored, 0);

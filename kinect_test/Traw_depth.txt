@@ -1,1 +1,1 @@
-12345345234572
+Hello snappy-java! Snappy-java is a JNI-based wrapper of Snappy, a fast compresser/decompresser.

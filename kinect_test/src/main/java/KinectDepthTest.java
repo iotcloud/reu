@@ -1,5 +1,4 @@
 import org.openkinect.freenect.*;
-import net.jpountz.lz4.*;
 
 import java.lang.*;
 import java.util.*;
