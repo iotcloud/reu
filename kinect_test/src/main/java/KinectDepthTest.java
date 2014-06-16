@@ -68,6 +68,8 @@ public class KinectDepthTest {
 				im.setRGB(x, y, pixel);
 			    }
 			}
+			ui.setImage(im);
+			ui.repaint();
 		}
 	    });
         Thread.sleep(1000000);
