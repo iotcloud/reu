@@ -33,34 +33,40 @@ public class CompressionTest {
 
         // DISPLAY DEPTH VIDEO
 	dev.startDepth(new DepthHandler() {
+		double avRawLen=0,p=0,avCompLen=0;
 		@Override
 		    public void onFrameReceived(FrameMode mode, ByteBuffer frame, int timestamp) {
 		    BufferedImage im = new BufferedImage(mode.getWidth(), mode.getHeight(), BufferedImage.TYPE_INT_RGB);
 
 		    byte[] data = new byte[614400];
 		    for(int i=0; i<614399; i++) data[i] = frame.get(i);
+
+		    avRawLen = avRawLen + data.length;
+
 		    //frame.get(data); //bulk get causes error
 		    
-		    try {
+		    /*try {
 			FileOutputStream outRaw = new FileOutputStream("raw_depth.txt");
 			outRaw.write(data);
 			outRaw.close();
 		    } catch (IOException e) {
 			System.exit(0);
-		    }
+			}*/
 		    
 		    // compress data
 		    try {
 			byte[] compressed = Snappy.compress(data);
 			byte[] restored = Snappy.uncompress(compressed);
-			
-			try {
+			avCompLen = avCompLen + compressed.length;
+			p++;
+
+			/*try {
 			    FileOutputStream outComp = new FileOutputStream("compressed_depth.txt");
 			    outComp.write(compressed);
 			outComp.close();
 			} catch (IOException e) {
 			    System.exit(0);
-			}
+			}*/
 			
 			for(int i=0; i<614400; i++) frame.put(i, restored[i]);
 		    } catch (IOException e) {
@@ -103,8 +109,10 @@ public class CompressionTest {
 		    ui.setImage(im);
 		    ui.repaint();
 		    //System.exit(0);
+		    System.out.println("avRawLen: " + avRawLen/p + " avCompLen: " + avCompLen/p);
 		}
 	    });
+
         Thread.sleep(1000000);
 
         // SHUT DOWN
