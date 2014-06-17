@@ -47,26 +47,29 @@ public class KinectDepthTest {
 			    int disp = hi << 8 | lo;
 			    double dist = t_gamma[disp];
 			    lo=0;
-			    if (dist <= 150 && dist>=40) { //values real far away go negative
+			    if (dist >= 40 && dist<150) { //values real far away go negative
 				b = 255;
 				r = 0;
-				g = 255-lo;
-			    } else if (dist > 150 && dist <= 250) {
-				b = 255-lo;
-				r = lo;
+				g = (int)(255-((dist-40)/109*255));
+			    } else if (dist >= 150 && dist <= 250) {
+				dist = ((dist-150)/100*255);
+				b = (int)(255-dist);
+				r = (int)(dist);
 				g = 0;
 			    } else if (dist > 250 && dist <= 500){
+				dist = (dist-251)/249*255;
 				b = 0;
-				r = 255-lo;
-				g = 0;
+				r = (int)(255-dist);
+				g = (int)(dist);
 			    } else if (disp==1023){
 				b = 0;
 				r = 0;
 				g = 0;
 			    } else {
-				b = 255;
-				r = 255;
-				g = 255;
+				dist = (dist-501)/t_gamma[1022]*255;
+				b = 20;
+				r = 0;
+				g = (int)(255-dist);
 			    }
 			    
 			    int pixel = (0xFF) << 24
