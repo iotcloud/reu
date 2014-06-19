@@ -58,7 +58,8 @@ public class SendFrame {
 		}
 	    });
 
-	Thread.sleep(5000);
+	Thread.sleep(10000);
+	channel.basicPublish( "", TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, null);
 
 	dev.stopDepth();
 
