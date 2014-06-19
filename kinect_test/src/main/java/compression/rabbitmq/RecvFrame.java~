@@ -1,0 +1,28 @@
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
+
+import org.openkinect.freenect.*;
+import org.xerial.snappy.Snappy;
+
+import java.io.*;
+import java.lang.*;
+import java.util.*;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+
+public static RecvFrame {
+
+    private static final String TASK_QUEUE_NAME = "frame_queue";
+
+    public static void main(String[] args) throws InterruptedException {
+
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost("localhost");
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+    
+    channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+
+    QueueingConsumer consumer = new QueueingConsumer(channel);
