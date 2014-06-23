@@ -6,6 +6,7 @@ import com.rabbitmq.client.QueueingConsumer;
 
 import org.openkinect.freenect.*;
 import org.xerial.snappy.Snappy;
+import com.jcraft.jzlib.*;
 
 import java.io.*;
 import java.lang.*;
@@ -15,7 +16,8 @@ import java.nio.ByteBuffer;
 
 public class RecvFrame {
 
-    private static final String TASK_QUEUE_NAME = "frame_queue";
+    //private static final String TASK_QUEUE_NAME = "frame_queue";
+    private static final String EXCHANGE_NAME = "frames";
 
     public static void main(String[] args) throws InterruptedException, IOException {
 	final ImageUI ui = new ImageUI();
@@ -32,10 +34,13 @@ public class RecvFrame {
 	Connection connection = factory.newConnection();
 	Channel channel = connection.createChannel();
 	
-	channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
-	
+	//channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+	channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+	String queueName = channel.queueDeclare().getQueue();
+	channel.queueBind(queueName, EXCHANGE_NAME, "");	
+
 	QueueingConsumer consumer = new QueueingConsumer(channel);
-	channel.basicConsume(TASK_QUEUE_NAME, false, consumer);
+	channel.basicConsume(queueName, true, consumer);
 	
 	double t_gamma[] = new double[1024];
 	for(int p=0; p<1024; p++) {
@@ -48,17 +53,28 @@ public class RecvFrame {
 	System.out.println("Waiting for delivery");
 
         do {
-	    delivery = consumer.nextDelivery();
-	    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+	    delivery = consumer.nextDelivery(); //stops here...
+	    //channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+	    int err;
+	    byte[] data = delivery.getBody();
+	    byte[] restored = new byte[614400];
+
+	    Inflater inflater = new Inflater();
 	    
-	    try {
-		byte[] data = delivery.getBody();
-		byte[] restored = Snappy.uncompress(data);
-		for(int i=0; i<614400; i++) frame.put(i, restored[i]);
-	    } catch (IOException e) {
-		System.exit(0);
+	    inflater.setInput(data);
+		
+	    while(true){
+		inflater.setOutput(restored);
+		err=inflater.inflate(JZlib.Z_NO_FLUSH);
+		if(err==JZlib.Z_STREAM_END) break;
+		CHECK_ERR(inflater, err, "inflate large");
 	    }
 	    
+	    err=inflater.end();
+	    CHECK_ERR(inflater, err, "inflateEnd");
+
+	    for(int i=0; i<614400; i++) frame.put(i, restored[i]);  
+
 	    int r,b,g,x,y;
 	    for(int i=0; i<614400; i+=2) {		    
 		int lo = frame.get(i) & 0xFF;
@@ -107,4 +123,15 @@ public class RecvFrame {
 	channel.close();
 	connection.close();
     }
+
+    static void CHECK_ERR(ZStream z, int err, String msg) {
+	if(err!=JZlib.Z_OK){
+	    if(z.msg!=null) System.out.print(z.msg+" "); 
+	    System.out.println(msg+" error: "+err); 
+	    
+	    System.exit(1);
+	}
+    }
 }
+
+
