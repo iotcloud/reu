@@ -24,7 +24,7 @@ public class RecvFrame {
 	Thread t = new Thread(new Runnable() {
 		@Override
 		    public void run() {
-		    ui.show();
+		    //ui.show();
 		}
 	    });
 	t.start();
@@ -45,6 +45,7 @@ public class RecvFrame {
 	double t_gamma[] = new double[1024];
 	for(int p=0; p<1024; p++) {
 	    t_gamma[p]=100 * 0.1236 * Math.tan(p / 2842.5 + 1.1863);
+	    System.out.println(t_gamma[p] +",");
 	}
 	
 	BufferedImage im = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
@@ -72,12 +73,15 @@ public class RecvFrame {
 	    
 	    err=inflater.end();
 	    CHECK_ERR(inflater, err, "inflateEnd");
-
-	    for(int i=0; i<614400; i++) frame.put(i, restored[i]);  
-
-	    int r,b,g,x,y;
-	    for(int i=0; i<614400; i+=2) {		    
-		int lo = frame.get(i) & 0xFF;
+	    
+     
+	    if(ObjDetect.detect(80,100,restored)) System.out.println("Object Detected");
+	    /*
+	      for(int i=0; i<614400; i++) frame.put(i, restored[i]);  
+	      
+	      int r,b,g,x,y;
+	      for(int i=0; i<614400; i+=2) {		    
+	      int lo = frame.get(i) & 0xFF;
 		int hi = frame.get(i+1) & 0xFF;
 		int disp = hi << 8 | lo;
 		double dist = t_gamma[disp];
@@ -112,14 +116,13 @@ public class RecvFrame {
 		    | (b & 0xFF) << 16
 		    | (g & 0xFF) << 8
 		    | (r & 0xFF) << 0;
-		im.setRGB(x, y, pixel);
-	    } 
-		ui.setImage(im);
-		ui.repaint();
+		    im.setRGB(x, y, pixel);*/ 
+	//ui.setImage(im);
+	//ui.repaint();
 	} while (delivery!=null);
-
+	
 	System.out.println("exitting");
-
+	
 	channel.close();
 	connection.close();
     }
