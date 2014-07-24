@@ -12,11 +12,11 @@ Supun Kamburugamuva supun06@gmail.com
 Problem
 ----------------------------------------------------------------------
 
-Perform real time parallel computing on Kinect sensor data recieved from
-large numbers of simulated turtlebots so that they may avoid objects.
-The goal of the project is to improve upon the efficiency of Supun
-Kamburugamuva's previous implementation so that a larger number of 
-robots may be operated simultaneously.
+Use the cloud to perform real time parallel computing Kinect sensor data recieved from
+the TurtlBot. I worked to write code to facilitate streaming raw depth data from the Kinect, converting 
+the raw data to distance values, and compressing and decompressing the values so that they could be sent efficiently.
+I also tested the entire system on several measurable factors: compression ratio and time, latency, and bytes sent per second.
+My contributions may be seen in detail on `contributors page <https://github.com/iotcloud/iotrobots/graphs/contributors>`_ for iotrobots.
 
 Links
 -----------------------------------------------------------------------
