@@ -1,7 +1,7 @@
 IoTCloud2 - REU
 ======================================================================
 
-This repository contains test code from my work with Supun Kamburugamuva on integrating the TurtleBot with IoTCloud2 and Storm.
+This repository contains test code from Leif Christiansen's work with Supun Kamburugamuva on integrating the TurtleBot with IoTCloud2 and Storm.
 
 Team
 ----------------------------------------------------------------------
